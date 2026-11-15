@@ -10,6 +10,7 @@ export async function sendTelegram(chatId, text) {
     try {
       const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
+        signal: AbortSignal.timeout(10000),
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chat_id: chatId, text, disable_web_page_preview: true }),
       });
@@ -25,7 +26,7 @@ export async function sendTelegram(chatId, text) {
 }
 
 export async function notifyUser(user, { eventType, title = '', message, idempotencyKey, force = false }) {
-  const chatId = user?.notifications?.telegram?.chatId || process.env.TELEGRAM_CHAT_ID;
+  const chatId = user?.notifications?.telegram?.chatId;
   if (!chatId || (!force && !user?.notifications?.telegram?.enabled)) return { skipped: true };
   if (idempotencyKey) {
     const existing = await NotificationLog.findOne({ idempotencyKey });

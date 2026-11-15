@@ -4,7 +4,9 @@
   "buildCommand": "npm run build && node scripts/prepare-vercel-native.mjs",
   "devCommand": "npm run dev -- --host 127.0.0.1 --port %PORT%",
   "outputDirectory": "dist",
+  "crons": [{ "path": "/api/notifications/market-alerts/run", "schedule": "30 3 * * *" }],
   "functions": {
+    "api/notifications.js": { "maxDuration": 300 },
     "api/produce-quality.js": { "maxDuration": 120 },
     "api/ai/mandi-forecast.py": { "includeFiles": "{model/**,api/_native/**}", "maxDuration": 60 }
   },

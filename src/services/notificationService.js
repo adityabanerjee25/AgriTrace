@@ -1,7 +1,6 @@
 const headersFor = (user, json = false) => ({
   ...(json ? { 'Content-Type': 'application/json' } : {}),
-  'x-user-id': user?.id || '',
-  'x-user-email': user?.email || '',
+  Authorization: `Bearer ${localStorage.getItem('agritrace_access_token') || ''}`,
 });
 
 async function request(path, user, options = {}) {
@@ -18,5 +17,6 @@ export const notificationService = {
   disconnectTelegram: (user) => request('/telegram/disconnect', user, { method: 'POST' }),
   testTelegram: (user) => request('/telegram/test', user, { method: 'POST' }),
   history: (user) => request('/history', user),
+  marketAlerts: (user, settings) => request('/market-alerts', user, { method: 'PUT', body: JSON.stringify(settings) }),
   emit: (user, event) => request('/events', user, { method: 'POST', body: JSON.stringify(event) }),
 };
