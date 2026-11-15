@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { qualityRequest, preparePhoto, CEDA_STATES, qualitySampleSummary } from '../services/market/produceQualityService';
 import './ProduceQuality.css';
+import { MARKET_CROPS } from '../../shared/marketCrops.js';
 export default function LotQualityPanel({ cropId, photos, onChange, onBusy, onError, onApplyPrice }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -35,6 +36,7 @@ export default function LotQualityPanel({ cropId, photos, onChange, onBusy, onEr
   }
   return <section className="produce-quality" aria-labelledby="lot-quality-heading">
     <h4 id="lot-quality-heading">Photo quality assessment</h4>
+    <p className="produce-quality-note"><strong>Assessing: {MARKET_CROPS[cropId]?.name || cropId}.</strong> The crop selected above determines the model; the photo filename does not. {cropId === 'TOMATO' ? 'Tomato detection and ripeness models are enabled.' : 'Automated quality grading is unavailable for this crop; photos can be reviewed by a quality partner.'}</p>
     <p>Upload up to five daylight photos, including a close-up. Images are saved with your lot for a quality partner to review.</p>
     {cropId === 'POTATO' && <p className="produce-quality-note">The supplied potato weights are general object detectors. Potato grading requires manual partner review until trained quality weights are supplied.</p>}
     <label htmlFor="produce-upload">Crop photos · JPEG, PNG or WebP, up to 8 MB each</label>

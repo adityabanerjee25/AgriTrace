@@ -158,6 +158,16 @@ export default function Market() {
   const [lotCropId, setLotCropId] = useState(selectedCommodityId);
   const lotCommodity = getCommodityById(lotCropId);
 
+  function openCreateLot() {
+    if (lotCropId !== selectedCommodityId) {
+      setLotPhotos([]);
+      setQualityError('');
+    }
+    setLotCropId(selectedCommodityId);
+    setLotUnit(selectedCommodity.defaultUnit || 'KG');
+    setShowCreateLotModal(true);
+  }
+
   const pageCopy = {
     overview: ['Market intelligence', 'Compare nearby mandi signals, direct buyer quotes and price movement for one crop at a time.'],
     discovery: ['Price & sale timing', 'Model price, transport, storage and sale timing before you list a lot.'],
@@ -252,7 +262,7 @@ export default function Market() {
           </p>
         </div>
         {activeTab === 'lots' && <div className="header-actions">
-          <button className="btn-primary" onClick={() => { setLotCropId(selectedCommodityId); setLotUnit(selectedCommodity.defaultUnit || 'KG'); setShowCreateLotModal(true); }}>
+          <button className="btn-primary" onClick={openCreateLot}>
             <Plus size={16} />
             <span>Create sell lot</span>
           </button>
@@ -425,7 +435,7 @@ export default function Market() {
           <MyLotsTab
             woolLots={marketplaceLots.filter(lot => lot.sellerId === user?.id).map(lot => ({ ...lot, id: lot.lotId, lotNumber: lot.lotId, totalQuantity: lot.quantity, farmerName: user?.name, photoReferences: lot.imageRefs || [], qualityAssessment: { status: lot.verifiedGrade ? 'VERIFIED' : 'REVIEW_REQUIRED', verifiedGrade: lot.verifiedGrade, provisionalGrade: lot.qualityEstimates?.map(item => item.grade).filter(Boolean).join(', '), warnings: lot.qualityEstimates?.map(item => item.reason), inspectorVerification: lot.qualityReview?.notes } }))}
             batches={batches}
-            onOpenCreateLot={() => setShowCreateLotModal(true)}
+            onOpenCreateLot={openCreateLot}
             onOpenFpoAggregator={() => setShowFPOModal(true)}
           />
         )}
@@ -533,7 +543,7 @@ export default function Market() {
                 </div>
                 <div>
                   <label htmlFor="lot-variety" style={{ fontSize: '12px', fontWeight: '700', color: '#475569' }}>Variety</label>
-                  <input id="lot-variety" name="variety" defaultValue={selectedCommodity.varieties[0] || 'Standard'} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #CCC' }} required />
+                  <input key={lotCropId} id="lot-variety" name="variety" defaultValue={lotCommodity.varieties[0] || 'Standard'} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #CCC' }} required />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div>
