@@ -8,6 +8,8 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useGlobalState } from '../../context/useGlobalState.js';
 import './FindWarehouse.css';
+import { STORAGE_DIRECTORY } from '../../services/storageDirectory.js';
+const capacityText = value => value == null ? 'Confirm with operator' : `${value.toLocaleString()} KG`;
 
 // Fix Leaflet Default Marker Icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -43,7 +45,8 @@ const MapRecenter = ({ center }) => {
 };
 
 export default function FindWarehouse() {
-  const { warehouses, batches, requestStorage } = useGlobalState();
+  const { batches, requestStorage } = useGlobalState();
+  const warehouses = STORAGE_DIRECTORY;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWarehouse, setSelectedWarehouse] = useState(warehouses[0]);
   const [detailModalWarehouse, setDetailModalWarehouse] = useState(null);
@@ -159,7 +162,7 @@ export default function FindWarehouse() {
             <Warehouse size={28} color="#0B120D" /> Find produce storage
           </h1>
           <p className="find-warehouse-subtitle">
-            Compare capacity, handling conditions and storage cost before you decide when to sell.
+            Real facilities from official CWC sources. Confirm crop suitability, cold storage, space and rates directly with the operator. Map pins marked approximate are for orientation.
           </p>
         </div>
       </div>
@@ -213,7 +216,7 @@ export default function FindWarehouse() {
             className={`wh-filter-tab ${activeFilter === 'AVAILABLE' ? 'active' : ''}`}
             onClick={() => setActiveFilter('AVAILABLE')}
           >
-            High Capacity (&gt;5000 KG)
+            Published availability
           </button>
           <button
             className={`wh-filter-tab ${activeFilter === 'CLIMATE' ? 'active' : ''}`}
@@ -230,6 +233,7 @@ export default function FindWarehouse() {
       <div className="wh-layout-grid">
         {/* Left: Warehouse Cards List */}
         <div className="wh-cards-list">
+          {!filteredWarehouses.length && <p>No published availability or cold-storage information matches this filter. View all facilities and confirm directly with the operator.</p>}
           {filteredWarehouses.map((wh) => (
             <div
               key={wh.id}
@@ -252,7 +256,7 @@ export default function FindWarehouse() {
               <div className="wh-metrics-row">
                 <div className="wh-metric-item">
                   <span className="wh-metric-label">Available Space</span>
-                  <span className="wh-metric-val">{wh.availableCapacity.toLocaleString()} KG</span>
+                  <span className="wh-metric-val">{capacityText(wh.availableCapacity)}</span>
                 </div>
                 <div className="wh-metric-item">
                   <span className="wh-metric-label">Storage Price</span>
@@ -281,10 +285,10 @@ export default function FindWarehouse() {
                   className="btn-wh-request"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setRequestModalWarehouse(wh);
+                    setDetailModalWarehouse(wh);
                   }}
                 >
-                  Request Storage <ArrowRight size={14} />
+                  Contact facility <ArrowRight size={14} />
                 </button>
               </div>
             </div>
@@ -318,10 +322,10 @@ export default function FindWarehouse() {
                     <strong style={{ fontSize: '14px', color: '#0B120D' }}>{wh.name}</strong>
                     <div style={{ fontSize: '12px', color: '#666', margin: '4px 0' }}>{wh.location}</div>
                     <div style={{ fontSize: '12px', fontWeight: '700', color: '#166534' }}>
-                      Available: {wh.availableCapacity.toLocaleString()} KG
+                      Available: {capacityText(wh.availableCapacity)}
                     </div>
                     <button
-                      onClick={() => setRequestModalWarehouse(wh)}
+                      onClick={() => setDetailModalWarehouse(wh)}
                       style={{
                         marginTop: '8px',
                         background: '#0B120D',
@@ -335,7 +339,7 @@ export default function FindWarehouse() {
                         width: '100%'
                       }}
                     >
-                      Request Storage
+                      Contact facility
                     </button>
                   </div>
                 </Popup>
@@ -356,7 +360,7 @@ export default function FindWarehouse() {
           <div className="modal-dialog-box" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid #EEE', paddingBottom: '16px' }}>
               <div>
-                <span className="verified-pill">✓ Storage credentials checked</span>
+                <span className="verified-pill">Official directory listing</span>
                 <h2 style={{ fontSize: '22px', fontWeight: '800', margin: '8px 0 4px 0', color: '#0B120D' }}>
                   {detailModalWarehouse.name}
                 </h2>
@@ -371,17 +375,19 @@ export default function FindWarehouse() {
 
             <p style={{ fontSize: '14px', color: '#444', lineHeight: '1.6', marginBottom: '20px' }}>
               {detailModalWarehouse.description}
+              {' '}<a href={detailModalWarehouse.sourceUrl} target="_blank" rel="noopener noreferrer">View official facility details and contacts</a>
+              {detailModalWarehouse.approximateLocation && ' Map pin is approximate; use the published address for travel.'}
             </p>
 
             {/* Capacity & Pricing Matrix */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', background: '#F8F8F3', padding: '16px', borderRadius: '12px', marginBottom: '24px' }}>
               <div>
                 <span style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase', fontWeight: '700' }}>Total Capacity</span>
-                <div style={{ fontSize: '16px', fontWeight: '800', color: '#0B120D' }}>{detailModalWarehouse.totalCapacity.toLocaleString()} KG</div>
+                <div style={{ fontSize: '16px', fontWeight: '800', color: '#0B120D' }}>{capacityText(detailModalWarehouse.totalCapacity)}</div>
               </div>
               <div>
                 <span style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase', fontWeight: '700' }}>Available Space</span>
-                <div style={{ fontSize: '16px', fontWeight: '800', color: '#166534' }}>{detailModalWarehouse.availableCapacity.toLocaleString()} KG</div>
+                <div style={{ fontSize: '16px', fontWeight: '800', color: '#166534' }}>{capacityText(detailModalWarehouse.availableCapacity)}</div>
               </div>
               <div>
                 <span style={{ fontSize: '11px', color: '#777', textTransform: 'uppercase', fontWeight: '700' }}>Storage Pricing</span>
@@ -415,13 +421,9 @@ export default function FindWarehouse() {
               <button
                 className="btn-wh-request"
                 style={{ padding: '12px' }}
-                onClick={() => {
-                  const wh = detailModalWarehouse;
-                  setDetailModalWarehouse(null);
-                  setRequestModalWarehouse(wh);
-                }}
+                  onClick={() => window.open(detailModalWarehouse.sourceUrl, '_blank', 'noopener,noreferrer')}
               >
-                Request storage <ArrowRight size={16} />
+                Open official contact directory <ArrowRight size={16} />
               </button>
               <button
                 className="btn-wh-details"

@@ -55,7 +55,7 @@ const BASE_PROVIDERS = [
   },
   {
     id: 2,
-    name: 'State Wool Warehousing Corp.',
+    name: 'Regional Produce Storage (Demo)',
     category: 'WAREHOUSE',
     categoryLabel: 'Warehouse Storage',
     owner: 'K. Somanna',

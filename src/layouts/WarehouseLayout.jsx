@@ -152,7 +152,7 @@ export default function WarehouseLayout() {
             </button>
             <div className="warehouse-hub-name">
               <Warehouse size={20} color="#0B120D" />
-              <span className="hub-name-text">Mysuru Wool Storage Centre (WH-01)</span>
+              <span className="hub-name-text">Mysuru Produce Storage Centre (Demo) (WH-01)</span>
             </div>
           </div>
 

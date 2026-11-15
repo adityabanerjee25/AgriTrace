@@ -222,6 +222,8 @@ def process_request(body):
     if not isinstance(body, dict):
         return 400, {'success': False, 'message': 'Expected a JSON object'}
     try:
+        if 'review' in body and not isinstance(body['review'], bool):
+            raise ValueError('review must be a boolean')
         conditions = body.get('conditions', {})
         if not isinstance(conditions, dict):
             raise ValueError('conditions must be an object')
@@ -240,6 +242,17 @@ def process_request(body):
         return 400, {'success': False, 'code': 'INVALID_MODEL_FEATURES', 'message': str(error)}
     except Exception:
         return 503, {'success': False, 'code': 'MODEL_UNAVAILABLE', 'message': 'Model artifacts could not be loaded or inference failed'}
+    if body.get('review') is False:
+        quick = {
+            'UP': 'The model suggests upward price pressure. Compare the possible benefit of waiting with storage costs and remaining shelf life.',
+            'DOWN': 'The model suggests downward price pressure. Prioritize comparing current buyer offers and transport costs.',
+            'STABLE': 'The model suggests broadly stable prices. Compare net buyer offers, transport costs and your cash needs.'
+        }[prediction['direction']]
+        return 200, {'success': True, 'status': 'READY', 'method': 'MODEL', **prediction,
+                     'quickRecommendation': quick, 'review': {'status': 'NOT_REQUESTED'},
+                     'advisory': None, 'inputFeatures': features, 'inputConditions': conditions,
+                     'reviewModel': None, 'limitations': LIMITATIONS,
+                     'generatedAt': datetime.now(timezone.utc).isoformat()}
     review, advisory = review_prediction(prediction, features, conditions)
     return 200, {'success': True, 'status': 'READY' if advisory else 'REVIEW_REQUIRED',
                  'method': 'MODEL', **prediction, 'review': review, 'advisory': advisory,

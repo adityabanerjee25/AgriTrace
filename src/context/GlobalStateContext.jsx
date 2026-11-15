@@ -222,14 +222,14 @@ const INITIAL_BATCHES = [
     createdAt: '2026-08-10T08:30:00Z',
     currentStage: 'WAREHOUSE',
     currentStatus: 'Stored in Zone A',
-    currentLocation: 'Mysuru Wool Storage Centre',
+    currentLocation: 'Mysuru Produce Storage Centre (Demo)',
     qualityGrade: 'A',
     certificateStatus: 'Certified',
     certificateId: 'WTC-QA-2026-00124',
     verificationUrl: 'http://localhost:5173/track/WT-KA-2026-00124',
     storageLocation: { zone: 'A', rack: 'R-12', section: '04', position: 'B' },
     warehouseId: 'WH-01',
-    warehouseName: 'Mysuru Wool Storage Centre',
+    warehouseName: 'Mysuru Produce Storage Centre (Demo)',
     events: [
       {
         id: 'EVT-001',
@@ -400,7 +400,7 @@ const INITIAL_CERTIFICATES = [
 const INITIAL_WAREHOUSES = [
   {
     id: 'WH-01',
-    name: 'Mysuru Wool Storage Centre',
+    name: 'Mysuru Produce Storage Centre (Demo)',
     location: 'Mysuru Industrial Area, Hebbal, Karnataka',
     city: 'Mysuru',
     state: 'Karnataka',
@@ -432,7 +432,7 @@ const INITIAL_WAREHOUSES = [
   },
   {
     id: 'WH-02',
-    name: 'State Wool Warehousing Corp.',
+    name: 'Regional Produce Storage (Demo)',
     location: 'APMC Yard, Ranebennur, Haveri, Karnataka',
     city: 'Ranebennur',
     state: 'Karnataka',
@@ -462,7 +462,7 @@ const INITIAL_WAREHOUSES = [
   },
   {
     id: 'WH-03',
-    name: 'Deccan Agri-Logistics & Wool Terminal',
+    name: 'Deccan Produce Logistics (Demo)',
     location: 'Cantonment Logistics Park, Ballari, Karnataka',
     city: 'Ballari',
     state: 'Karnataka',
@@ -492,7 +492,7 @@ const INITIAL_WAREHOUSES = [
   },
   {
     id: 'WH-04',
-    name: 'Bikaner Wool Hub & Cold Storage',
+    name: 'Bikaner Produce Storage (Demo)',
     location: 'Industrial Area Phase II, Bikaner, Rajasthan',
     city: 'Bikaner',
     state: 'Rajasthan',
@@ -522,7 +522,7 @@ const INITIAL_WAREHOUSES = [
   },
   {
     id: 'WH-05',
-    name: 'Himalayan Artisans Wool Depot',
+    name: 'Himalayan Produce Depot (Demo)',
     location: 'Bhuntar Logistics Park, Kullu, Himachal Pradesh',
     city: 'Kullu',
     state: 'Himachal Pradesh',
@@ -552,7 +552,7 @@ const INITIAL_WAREHOUSES = [
   },
   {
     id: 'WH-06',
-    name: 'Northern India Wool & Yarn Terminal',
+    name: 'Northern India Produce Terminal (Demo)',
     location: 'Industrial Area A, Ludhiana, Punjab',
     city: 'Ludhiana',
     state: 'Punjab',
@@ -590,7 +590,7 @@ const INITIAL_REQUESTS = [
     farmerId: 'FARMER-01',
     farmerName: 'Rajesh Gowda',
     warehouseId: 'WH-01',
-    warehouseName: 'Mysuru Wool Storage Centre',
+    warehouseName: 'Mysuru Produce Storage Centre (Demo)',
     quantity: 320,
     woolType: 'Medium Crossbred Wool',
     grade: 'B',
@@ -609,7 +609,7 @@ const INITIAL_REQUESTS = [
     farmerId: 'FARMER-04',
     farmerName: 'Hanumanaram Jat',
     warehouseId: 'WH-04',
-    warehouseName: 'Bikaner Wool Hub & Cold Storage',
+    warehouseName: 'Bikaner Produce Storage (Demo)',
     quantity: 820,
     woolType: 'Magra Carpet Wool (Lustrous)',
     grade: 'A',
@@ -632,7 +632,7 @@ const INITIAL_BOOKINGS = [
     farmerId: 'FARMER-01',
     farmerName: 'Rajesh Gowda',
     warehouseId: 'WH-01',
-    warehouseName: 'Mysuru Wool Storage Centre',
+    warehouseName: 'Mysuru Produce Storage Centre (Demo)',
     quantity: 428,
     woolType: 'Merino Cross Fleece',
     grade: 'A',
@@ -659,7 +659,7 @@ const INITIAL_BOOKINGS = [
     farmerId: 'FARMER-02',
     farmerName: 'Baldev Singh',
     warehouseId: 'WH-04',
-    warehouseName: 'Bikaner Wool Hub & Cold Storage',
+    warehouseName: 'Bikaner Produce Storage (Demo)',
     quantity: 650,
     woolType: 'Chokla Fine Carpet Wool',
     grade: 'A',
@@ -686,7 +686,7 @@ const INITIAL_RELEASES = [
     id: 'REL-2026-0019',
     batchId: 'WT-RJ-2026-00089',
     warehouseId: 'WH-04',
-    warehouseName: 'Bikaner Wool Hub & Cold Storage',
+    warehouseName: 'Bikaner Produce Storage (Demo)',
     farmerName: 'Baldev Singh',
     buyerName: 'Rajasthan Carpet Mills',
     originalStoredQty: 650,
@@ -1003,7 +1003,7 @@ export const GlobalStateProvider = ({ children }) => {
 
   const [warehouses, setWarehouses] = useState(() => {
     const stored = localStorage.getItem('wt_warehouses_v2');
-    return stored ? JSON.parse(stored) : INITIAL_WAREHOUSES;
+    return (stored ? JSON.parse(stored) : INITIAL_WAREHOUSES).map(item => ({ ...item, name: item.name.replace(/wool/gi, 'Produce').replace(/yarn/gi, 'Crop') }));
   });
 
   const [warehouseRequests, setWarehouseRequests] = useState(() => {
@@ -1102,7 +1102,7 @@ export const GlobalStateProvider = ({ children }) => {
         vehicleNumber: 'KA-09-EA-4412',
         driverName: 'Ramesh Singh',
         pickup: 'Mandya Farm, Karnataka',
-        dropoff: 'Mysuru Wool Storage Centre',
+        dropoff: 'Mysuru Produce Storage Centre (Demo)',
         status: 'Delivered',
         createdAt: '2026-08-15T09:30:00Z',
         deliveredAt: '2026-08-15T16:00:00Z'
@@ -1115,7 +1115,7 @@ export const GlobalStateProvider = ({ children }) => {
         vehicleNumber: 'KA-09-EA-8821',
         driverName: 'Suresh Kumar',
         pickup: 'Mandya Farm, Karnataka',
-        dropoff: 'Mysuru Wool Storage Centre',
+        dropoff: 'Mysuru Produce Storage Centre (Demo)',
         status: 'In Transit',
         createdAt: '2026-08-15T10:00:00Z'
       }
@@ -1357,7 +1357,7 @@ export const GlobalStateProvider = ({ children }) => {
     addTraceEvent(batchId, {
       stage: 'WAREHOUSE',
       title: 'Storage Slot Assigned',
-      location: 'Mysuru Wool Storage Centre',
+      location: 'Mysuru Produce Storage Centre (Demo)',
       status: 'Completed',
       actor: 'Warehouse Supervisor',
       description: `Physical placement assigned: ${locationString}. Digital twin mapped to automated inventory.`
@@ -1374,7 +1374,7 @@ export const GlobalStateProvider = ({ children }) => {
       id: `REL-2026-${Math.floor(1000 + Math.random() * 9000)}`,
       batchId,
       warehouseId: targetBatch.warehouseId || 'WH-01',
-      warehouseName: targetBatch.warehouseName || 'Mysuru Wool Storage Centre',
+      warehouseName: targetBatch.warehouseName || 'Mysuru Produce Storage Centre (Demo)',
       farmerName: targetBatch.farmerName,
       requestedBy,
       originalStoredQty: targetBatch.quantity,

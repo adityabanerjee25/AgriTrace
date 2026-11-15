@@ -29,6 +29,21 @@ class ForecastChecks(unittest.TestCase):
         self.assertAlmostEqual(sum(result['classProbabilities'].values()), 1)
         self.assertEqual(result, forecast.predict(dict(reversed(list(self.features.items())))))
 
+    def test_quick_predictions_never_call_qwen(self):
+        for crop in ['Tomato', 'Potato', 'Onion']:
+            features = {**self.features, 'vegetable': crop}
+            with patch.object(forecast, 'review_prediction', side_effect=AssertionError('Qwen must not run')) as reviewer:
+                status, result = forecast.process_request({'features': features, 'review': False})
+            self.assertEqual(status, 200)
+            reviewer.assert_not_called()
+            self.assertTrue(result['quickRecommendation'])
+            self.assertIsNone(result['reviewModel'])
+            self.assertEqual(result['inputFeatures']['vegetable'], crop)
+
+    def test_quick_predictions_reject_unsupported_crops(self):
+        status, _ = forecast.process_request({'features': {**self.features, 'vegetable': 'Wheat'}, 'review': False})
+        self.assertEqual(status, 400)
+
     def test_invalid_inputs(self):
         for features in (None, {}, {**self.features, 'vegetable': 'Wool'},
                          {**self.features, 'price_norm': float('nan')},
